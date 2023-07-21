@@ -115,6 +115,10 @@ git tag x.y.z
 git push 
 ```
 
+## Notable resources
+
+Talk about Network resource modules - https://www.ansible.com/deep-dive-into-ansible-network-resource-module
+
 ## Releasing, Versioning and Deprecation
 
 See [RELEASE_POLICY.md](https://github.com/ansible-collections/community.ciscosmb/blob/main/RELEASE_POLICY.md)
