@@ -56,9 +56,8 @@ pip install ansible
 pip install -r requirements-dev.txt
 pip install -r tests/unit/requirements.txt
 
-# Network resource builder
-git clone git@github.com:ansible-network/resource_module_builder.git
-
+# CLI Network resource builder
+ansible-galaxy collection install git+https://github.com/ansible-network/cli_rm_builder.git
 ```
 
 ### Develop 
@@ -68,9 +67,8 @@ cd ansible_collections/community/ciscosmb
 git pull
 . .venv/bin/activate
 
-cd ./resource_module_builder
-### do if for all models in ../rmb_models if changed
-ansible-playbook -e rm_dest=.. -e structure=collection -e collection_org=community -e collection_name=ciscosmb -e model=../rmb_models/hostname/ciscosmb_hostname.yml site.yml
+### if cli_nrb_models.yml or files in cli_rm_builder_models dir changed
+ansible-playbook cli_rm_builder_run.yml
 
 # edit files
 

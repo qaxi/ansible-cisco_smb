@@ -1,0 +1,14 @@
+- name: hostname resource
+  hosts: localhost
+  gather_facts: yes
+  vars:
+    collection_org: community
+    collection_name: ciscosmb
+    copyright: "Copyright {{ ansible_date_time.year }} Petr Klima and Red Hat"
+    ansible_connection: local
+    rm_dest: ./
+    docstring: ./cli_rm_builder_models/hostname.docstring
+    examples:  ./cli_rm_builder_models/hostname.example
+    resource:  hostname
+  roles:
+    - ansible_network.cli_rm_builder.run

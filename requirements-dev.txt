@@ -6,6 +6,8 @@ ansible-pylibssh
 pycodestyle
 pylint
 voluptuous 
+black
+click==8.0.4 # black fails with newer version 
 
 # units
 pytest
