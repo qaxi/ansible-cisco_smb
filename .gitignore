@@ -14,6 +14,9 @@ importer_result.json
 tests/output/
 changelogs/.plugin-cache.yaml
 
+# resource module builder
+resource_module_builder
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
