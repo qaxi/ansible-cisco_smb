@@ -17,3 +17,7 @@ mock
 yamllint
 galaxy_importer
 antsibull-changelog
+
+# network resource builder
+jsonref
+

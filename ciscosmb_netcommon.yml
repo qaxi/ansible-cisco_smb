@@ -1,0 +1,43 @@
+- name: Gather Facts
+  gather_facts: true
+  hosts: all
+
+  tasks:
+
+###     - name: Host info
+###       ansible.builtin.debug:
+###         verbosity: 3
+###         var: "hostvars"
+### 
+###     ###
+###     # Collect data
+### 
+###     - name: get list of resource modules for given network_os
+###       ansible.netcommon.network_resource:
+###       register: result
+###     
+###     - name: ansible.netcommon.network_resource List
+###       ansible.builtin.debug:
+###         verbosity: 1
+###         msg:
+###           - "{{ result }}"
+
+    - name: ansible_facts
+      ansible.builtin.debug:
+        verbosity: 5
+        msg:
+          - "{{ ansible_facts }}"
+
+    - name: CSV output
+      ansible.builtin.debug:
+        verbosity: 1
+        msg:
+          - "Hostname:     {{ ansible_facts['net_hostname'] | default('') }}"
+          - "Model:        {{ ansible_facts['net_model'] | default('') }}"
+          - "Machine:      {{ ansible_facts['architecture'] | default('') }}"
+          - "SN:           {{ ansible_facts['net_serialnum'] | default('') }}"
+          - "SN prod:      {{ ansible_facts['ansible_product_nam'] | default('') }}"
+          - "SW version    {{ ansible_facts['net_version'] | default('') }}"
+          - "HW version:   {{ ansible_facts['net_hw_version'] | default('') }}"
+          - "config:       {{ ansible_facts['net_config'] | default('') }}"
+          

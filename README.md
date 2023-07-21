@@ -68,7 +68,7 @@ git pull
 # Network resource builder
 git clone git@github.com:ansible-network/resource_module_builder.git
 cd ./resource_module_builder
-### do if for all models
+### do if for all models if changed
 ansible-playbook -e rm_dest=.. -e structure=collection -e collection_org=community -e collection_name=ciscosmb -e model=../rmb_models/hostname/ciscosmb_hostname.yml
 
 # edit files
@@ -124,10 +124,15 @@ git push
 
 ## Notable resources
 
+Debuging modules - https://docs.ansible.com/ansible/latest/dev_guide/debugging.html
+
 ### Network resource modules
 
 Ansible 2019 talk - https://www.ansible.com/deep-dive-into-ansible-network-resource-module
+
 Network developer guide - https://docs.ansible.com/ansible/devel/network/dev_guide/developing_resource_modules_network.html
+
+Debugging Ansible Network Module with VS Code - https://github.com/KB-perByte/debuggingNetworkResourceModule/blob/master/README.md
 
 ## Releasing, Versioning and Deprecation
 
