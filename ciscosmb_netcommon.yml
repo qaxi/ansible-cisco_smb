@@ -4,31 +4,29 @@
 
   tasks:
 
-###     - name: Host info
-###       ansible.builtin.debug:
-###         verbosity: 3
-###         var: "hostvars"
-### 
-###     ###
-###     # Collect data
-### 
-###     - name: get list of resource modules for given network_os
-###       ansible.netcommon.network_resource:
-###       register: result
-###     
-###     - name: ansible.netcommon.network_resource List
-###       ansible.builtin.debug:
-###         verbosity: 1
-###         msg:
-###           - "{{ result }}"
-
-    - name: ansible_facts
+    - name: Host info
       ansible.builtin.debug:
-        verbosity: 5
-        msg:
-          - "{{ ansible_facts }}"
+        verbosity: 3
+        var: "hostvars"
 
-    - name: CSV output
+    - name: Full ansible_facts
+      ansible.builtin.debug:
+        verbosity: 2
+        var: "ansible_facts"
+
+    ###
+    # Collect data
+    - name: get list of resource modules for given network_os
+      ansible.netcommon.network_resource:
+      register: result
+    
+    - name: ansible.netcommon.network_resource List
+      ansible.builtin.debug:
+        verbosity: 1
+        msg:
+          - "{{ result }}"
+
+    - name: Selected ansible_facts
       ansible.builtin.debug:
         verbosity: 1
         msg:

@@ -1,0 +1,176 @@
+# Using state: merged
+
+# Before state:
+# -------------
+
+# router-ios#show running-config | section ^hostname
+# hostname Router
+
+# Merged play:
+# ------------
+
+- name: Apply the provided configuration
+  cisco.ios.ios_hostname:
+    config:
+      hostname: Router1
+    state: merged
+
+# Commands Fired:
+# ---------------
+
+# "commands": [
+#         "hostname Router1",
+# ],
+
+# After state:
+# ------------
+
+# router-ios#show running-config | section ^hostname
+# hostname Router1
+
+# Using state: deleted
+
+# Before state:
+# -------------
+
+# router-ios#show running-config | section ^hostname
+# hostname RouterTest
+
+# Deleted play:
+# -------------
+
+- name: Remove all existing configuration
+  cisco.ios.ios_hostname:
+    state: deleted
+
+# Commands Fired:
+# ---------------
+
+# "commands": [
+#     "no hostname RouterTest",
+# ],
+
+# After state:
+# ------------
+
+# router-ios#show running-config | section ^hostname
+# hostname Router
+
+# Using state: overridden
+
+# Before state:
+# -------------
+
+# router-ios#show running-config | section ^hostname
+# hostname Router
+
+# Overridden play:
+# ----------------
+
+- name: Override commands with provided configuration
+  cisco.ios.ios_hostname:
+    config:
+      hostname: RouterTest
+    state: overridden
+
+# Commands Fired:
+# ---------------
+# "commands": [
+#       "hostname RouterTest",
+#     ],
+
+# After state:
+# ------------
+
+# router-ios#show running-config | section ^hostname
+# hostname RouterTest
+
+# Using state: replaced
+
+# Before state:
+# -------------
+
+# router-ios#show running-config | section ^hostname
+# hostname RouterTest
+
+# Replaced play:
+# --------------
+
+- name: Replace commands with provided configuration
+  cisco.ios.ios_hostname:
+    config:
+      hostname: RouterTest
+    state: replaced
+
+# Commands Fired:
+# ---------------
+
+# "commands": [],
+
+# After state:
+# ------------
+
+# router-ios#show running-config | section ^hostname
+# hostname RouterTest
+
+# Using state: gathered
+
+# Before state:
+# -------------
+
+#router-ios#show running-config | section ^hostname
+# hostname RouterTest
+
+# Gathered play:
+# --------------
+
+- name: Gather listed hostname config
+  cisco.ios.ios_hostname:
+    state: gathered
+
+# Module Execution Result:
+# ------------------------
+
+#   "gathered": {
+#      "hostname": "RouterTest"
+#     },
+
+# Using state: rendered
+
+# Rendered play:
+# --------------
+
+- name: Render the commands for provided configuration
+  cisco.ios.ios_hostname:
+    config:
+      hostname: RouterTest
+    state: rendered
+
+# Module Execution Result:
+# ------------------------
+
+# "rendered": [
+#     "hostname RouterTest",
+# ]
+
+# Using state: parsed
+
+# File: parsed.cfg
+# ----------------
+
+# hostname RouterTest
+
+# Parsed play:
+# ------------
+
+- name: Parse the provided configuration with the existing running configuration
+  cisco.ios.ios_hostname:
+    running_config: "{{ lookup('file', 'parsed.cfg') }}"
+    state: parsed
+
+# Module Execution Result:
+# ------------------------
+
+#  "parsed": {
+#     "hostname": "RouterTest"
+# }
