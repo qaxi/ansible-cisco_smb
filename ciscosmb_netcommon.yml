@@ -18,24 +18,32 @@
     # Collect data
     - name: get list of resource modules for given network_os
       ansible.netcommon.network_resource:
-      register: result
-    
-    - name: ansible.netcommon.network_resource List
+      register: res_resources
+
+    - name: get NC facts
+      community.ciscosmb.ciscosmb_facts:
+      register: res_facts
+
+    - name: show results
       ansible.builtin.debug:
         verbosity: 1
         msg:
-          - "{{ result }}"
+          - "NC resources: {{ res_resources }}"
+          - "NC hostname:  {{ res_facts }}"
 
     - name: Selected ansible_facts
       ansible.builtin.debug:
         verbosity: 1
         msg:
-          - "Hostname:     {{ ansible_facts['net_hostname'] | default('') }}"
-          - "Model:        {{ ansible_facts['net_model'] | default('') }}"
-          - "Machine:      {{ ansible_facts['architecture'] | default('') }}"
-          - "SN:           {{ ansible_facts['net_serialnum'] | default('') }}"
-          - "SN prod:      {{ ansible_facts['ansible_product_nam'] | default('') }}"
-          - "SW version    {{ ansible_facts['net_version'] | default('') }}"
-          - "HW version:   {{ ansible_facts['net_hw_version'] | default('') }}"
-          - "config:       {{ ansible_facts['net_config'] | default('') }}"
+          - "Hostname:        {{ ansible_facts['net_hostname'] | default('') }}"
+          - "Model:           {{ ansible_facts['net_model'] | default('') }}"
+          - "Network OS:      {{ ansible_network_os | default('') }}"
+          - "Network OS (NC): {{ ansible_facts['net_system'] | default('') }}"
+          - "System:          {{ ansible_facts['system'] | default('') }}"
+          - "Machine:         {{ ansible_facts['architecture'] | default('') }}"
+          - "SN:              {{ ansible_facts['net_serialnum'] | default('') }}"
+          - "SN prod:         {{ ansible_facts['ansible_product_nam'] | default('') }}"
+          - "SW version:      {{ ansible_facts['net_version'] | default('') }}"
+          - "HW version:      {{ ansible_facts['net_hw_version'] | default('') }}"
+          - "config:          {{ ansible_facts['net_config'] | default('') }}"
           

@@ -26,25 +26,16 @@ class HostnameTemplate(NetworkTemplate):
     # fmt: off
     PARSERS = [
         {
-            "name": "key_a",
+            "name": "hostname",
             "getval": re.compile(
                 r"""
-                ^key_a\s(?P<key_a>\S+)
+                ^hostname\s(?P<hostname>\S+)
                 $""", re.VERBOSE),
-            "setval": "",
+            "setval": "hostname {{ hostname }}",
             "result": {
+                "hostname": "{{ hostname }}"
             },
             "shared": True
-        },
-        {
-            "name": "key_b",
-            "getval": re.compile(
-                r"""
-                \s+key_b\s(?P<key_b>\S+)
-                $""", re.VERBOSE),
-            "setval": "",
-            "result": {
-            },
         },
     ]
     # fmt: on
