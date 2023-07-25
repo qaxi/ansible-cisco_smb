@@ -87,6 +87,12 @@ git commit -m "xxx" file
 cd ansible_collections/community/ciscosmb
 . .venv/bin/activate
 
+## Debuging
+#export ANSIBLE_LOG_PATH=/tmp/ansible.log
+#export ANSIBLE_DEBUG=True
+#export ANSIBLE_PERSISTENT_LOG_MESSAGES=True
+#ansible-playbook -vvvv ...
+
 # PY="--python 3.8" # set your version or unset
 METHOD="--docker" # or --local if you have no Docker installed
 ansible-test sanity ${METHOD} ${PY}  \
