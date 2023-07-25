@@ -89,7 +89,8 @@ def main():
     """
     module = AnsibleModule(argument_spec=FactsArgs.argument_spec,
                            supports_check_mode=True)
-    warnings = []
+    warnings = ['default value for `gather_subset` '
+                'will be changed to `min` from `!config` v2.11 onwards']
 
     result = Facts(module).get_facts()
 
