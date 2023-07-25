@@ -8,7 +8,7 @@
     ansible_connection: local
     rm_dest: ./
     docstring: ./cli_rm_builder_models/hostname.docstring
-    examples:  ./cli_rm_builder_models/hostname.example
+    examples:  ./cli_rm_builder_models/hostname.examples
     resource:  hostname
   roles:
     - ansible_network.cli_rm_builder.run
