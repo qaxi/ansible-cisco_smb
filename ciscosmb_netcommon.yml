@@ -6,12 +6,12 @@
 
     - name: Host info
       ansible.builtin.debug:
-        verbosity: 3
+        verbosity: 6
         var: "hostvars"
 
     - name: Full ansible_facts
       ansible.builtin.debug:
-        verbosity: 2
+        verbosity: 5
         var: "ansible_facts"
 
     ###
@@ -20,16 +20,33 @@
       ansible.netcommon.network_resource:
       register: res_resources
 
-    - name: get NC facts
+    - name: get CiscoSMB NC facts
       community.ciscosmb.ciscosmb_facts:
       register: res_facts
+      when: ansible_network_os == 'community.ciscosmb.ciscosmb'
+    
+    - name: get CiscoIOS NC facts
+      cisco.ios.ios_facts:
+      register: res_facts
+      when: ansible_network_os == 'cisco.ios.ios'
+
+    - name: get CiscoSMB NC hostname
+      community.ciscosmb.ciscosmb_hostname:
+      register: res_hostname
+      when: ansible_network_os == 'community.ciscosmb.ciscosmb'
+    
+    - name: get CiscoIOS NC hostname
+      cisco.ios.ios_hostname:
+      register: res_hostname
+      when: ansible_network_os == 'cisco.ios.ios'
 
     - name: show results
       ansible.builtin.debug:
         verbosity: 1
         msg:
           - "NC resources: {{ res_resources }}"
-          - "NC hostname:  {{ res_facts }}"
+          - "NC facts:     {{ res_facts }}"
+          - "NC hostname:  {{ res_hostname }}"
 
     - name: Selected ansible_facts
       ansible.builtin.debug:
