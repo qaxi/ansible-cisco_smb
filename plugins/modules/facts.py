@@ -1,1 +1,0 @@
-ciscosmb_facts.py
