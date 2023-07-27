@@ -21,7 +21,9 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-author: Egor Zaitsev (@heuels)
+author:
+- Ansible Networking Team (@ansible-network)
+- Petr Klíma (@qaxi)
 name: ciscosmb
 short_description: Use ciscosmb cliconf to run command on Cisco SMB network devices
 description:
@@ -29,11 +31,23 @@ description:
     sending and receiving CLI commands from Cisco SMB network devices.
 '''
 
-import re
 import json
+import re
+import time
 
+from ansible.errors import AnsibleConnectionFailure
 from ansible.module_utils._text import to_text
-from ansible.plugins.cliconf import CliconfBase, enable_mode
+from ansible.module_utils.common._collections_compat import Mapping
+from ansible.module_utils.six import iteritems
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import (
+    NetworkConfig,
+    dumps,
+)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import to_list
+from ansible_collections.ansible.netcommon.plugins.plugin_utils.cliconf_base import (
+    CliconfBase,
+    enable_mode,
+)
 
 
 class Cliconf(CliconfBase):
@@ -249,7 +263,7 @@ class Cliconf(CliconfBase):
     def get_device_info(self):
         if not self._device_info:
             device_info = {}
-            
+
             device_info['network_os'] = 'ciscosmb'
             # Ensure we are not in config mode
             self._update_cli_prompt_context(config_context=")#", exit_command="end")

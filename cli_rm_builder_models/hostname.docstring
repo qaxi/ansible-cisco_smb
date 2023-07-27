@@ -1,5 +1,5 @@
 module: ios_hostname
-short_description: Resource module to configure hostname.
+short_description: Resource module to configure hostname #TODO make it ciscosmb documentation
 description:
   - This module provides declarative management of hostname on Cisco IOS devices.
 version_added: 2.7.0

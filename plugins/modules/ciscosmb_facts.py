@@ -16,7 +16,7 @@ DOCUMENTATION = """
 ---
 module: ciscosmb_facts
 short_description: Get facts about ciscosmb devices.
-version_added: "1.0.0"
+version_added: 1.0.0
 description:
   - Collects facts from network devices running the ciscosmb operating
     system. This module places the facts gathered in the fact tree keyed by the
@@ -33,8 +33,8 @@ options:
         with an initial C(M(!)) to specify that a specific subset should
         not be collected.
     required: false
-    default: 'all'
-    version_added: "2.2"
+    default: all
+    version_added: 2.2
   gather_network_resources:
     description:
       - When supplied, this argument will restrict the facts collected
@@ -44,7 +44,7 @@ options:
         can also be used with an initial C(M(!)) to specify that a
         specific subset should not be collected.
     required: false
-    version_added: "2.9"
+    version_added: 2.9
 """
 
 EXAMPLES = """

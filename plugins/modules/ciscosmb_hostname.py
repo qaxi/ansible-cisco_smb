@@ -12,6 +12,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+# TODO make it ciscosmb documentation
 DOCUMENTATION = """
 module: ios_hostname
 short_description: Resource module to configure hostname.

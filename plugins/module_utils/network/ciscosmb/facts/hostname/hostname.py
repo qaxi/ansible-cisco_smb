@@ -27,6 +27,7 @@ from ansible_collections.community.ciscosmb.plugins.module_utils.network.ciscosm
     HostnameArgs,
 )
 
+
 class HostnameFacts(object):
     """ The ciscosmb hostname facts class
     """
@@ -50,7 +51,7 @@ class HostnameFacts(object):
 
         command = "show running-config | include ^hostname"
         if not data:
-            data = connection.get(command = command)
+            data = connection.get(command=command)
 
         # parse native config using the Hostname template
         hostname_parser = HostnameTemplate(lines=data.splitlines(), module=self._module)
