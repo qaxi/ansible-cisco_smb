@@ -48,12 +48,13 @@ class HostnameFacts(object):
         facts = {}
         objs = []
 
+        command = "show running-config | include ^hostname"
         if not data:
-            data = connection.get()
+            data = connection.get(command = command)
 
         # parse native config using the Hostname template
         hostname_parser = HostnameTemplate(lines=data.splitlines(), module=self._module)
-        objs = list(hostname_parser.parse().values())
+        objs = hostname_parser.parse()
 
         ansible_facts['ansible_network_resources'].pop('hostname', None)
 
