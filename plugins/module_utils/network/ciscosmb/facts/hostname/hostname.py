@@ -49,7 +49,9 @@ class HostnameFacts(object):
         facts = {}
         objs = []
 
-        command = "show running-config | include ^hostname"
+        # TODO: optimalization - get the config only once ...
+        # FW ver. 1.x does not have | filter
+        command = "show running-config"
         if not data:
             data = connection.get(command=command)
 
