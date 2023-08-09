@@ -88,6 +88,7 @@ cd ansible_collections/community/ciscosmb
 . .venv/bin/activate
 
 ## Debuging
+#export ANSIBLE_HOST_KEY_CHECKING=false
 #export ANSIBLE_LOG_PATH=./ansible.log
 #export ANSIBLE_DEBUG=True
 #export ANSIBLE_PERSISTENT_LOG_MESSAGES=True
