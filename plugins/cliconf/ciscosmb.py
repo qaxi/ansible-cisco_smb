@@ -155,13 +155,15 @@ from ansible_collections.ansible.netcommon.plugins.plugin_utils.cliconf_base imp
     enable_mode,
 )
 
+# necesary for get "gather_facts: true" work
+from ansible import constants as C
 
 class Cliconf(CliconfBase):
     def __init__(self, *args, **kwargs):
         self._device_info = {}
         super(Cliconf, self).__init__(*args, **kwargs)
         # necesary for get "gather_facts: true" work
-        ansible.constants.CONNECTION_FACTS_MODULES['community.ciscosmb.ciscosmb'] = 'community.ciscosmb.ciscosmb_facts'
+        C.CONNECTION_FACTS_MODULES['community.ciscosmb.ciscosmb'] = 'community.ciscosmb.ciscosmb_facts'
 
 
     @enable_mode
@@ -425,6 +427,7 @@ class Cliconf(CliconfBase):
             device_info = {}
 
             device_info['network_os'] = 'ciscosmb'
+            
             # Ensure we are not in config mode
             self._update_cli_prompt_context(config_context=")#", exit_command="end")
             reply = self.get(command="show version")
