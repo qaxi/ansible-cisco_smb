@@ -16,20 +16,126 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
+
 __metaclass__ = type
 
-DOCUMENTATION = '''
----
+DOCUMENTATION = """
 author:
 - Ansible Networking Team (@ansible-network)
 - Petr Klíma (@qaxi)
 name: ciscosmb
 short_description: Use ciscosmb cliconf to run command on Cisco SMB network devices
 description:
-  - This ciscosmb plugin provides low level abstraction apis for
-    sending and receiving CLI commands from Cisco SMB network devices.
-'''
+- This ciscosmb plugin provides low level abstraction apis for sending and receiving CLI
+  commands from Cisco SMB network devices.
+version_added: 1.0.0
+options:
+  commit_confirm_immediate:
+    type: boolean
+    default: false
+    description:
+    - Enable or disable commit confirm mode.
+    - Confirms the configuration pushed after a custom/ default timeout.(default 1 minute).
+    - For custom timeout configuration set commit_confirm_timeout value.
+    - On commit_confirm_immediate default value for commit_confirm_timeout is considered 1 minute
+      when variable in not explicitly declared.
+    env:
+    - name: ANSIBLE_CISCOSMB_COMMIT_CONFIRM_IMMEDIATE
+    vars:
+    - name: ansible_ciscosmb_commit_confirm_immediate
+  commit_confirm_timeout:
+    type: int
+    description:
+    - Commits the configuration on a trial basis for the time
+      specified in minutes.
+    - Using commit_confirm_timeout without specifying commit_confirm_immediate would
+      need an explicit C(configure confirm) using the ios_command module
+      to confirm/commit the changes made.
+    - Refer to example for a use case demonstration.
+    env:
+    - name: ANSIBLE_CISCOSMB_COMMIT_CONFIRM_TIMEOUT
+    vars:
+    - name: ansible_ciscosmb_commit_confirm_timeout
+  config_commands:
+    description:
+    - Specifies a list of commands that can make configuration changes
+      to the target device.
+    - When `ansible_network_single_user_mode` is enabled, if a command sent
+      to the device is present in this list, the existing cache is invalidated.
+    version_added: 2.0.0
+    type: list
+    elements: str
+    default: []
+    vars:
+    - name: ansible_ciscosmb_config_commands
+"""
+
+EXAMPLES = """
+# NOTE - Cisco SMB waits for a `configure confirm` when the configure terminal
+# command executed is `configure terminal revert timer <timeout>` within the timeout
+# period for the configuration to commit successfully, else a rollback
+# happens.
+
+# Use commit confirm with timeout and confirm the commit explicitly
+
+- name: Example commit confirmed
+  vars:
+    ansible_ciscosmb_commit_confirm_timeout: 1
+  tasks:
+    - name: "Commit confirmed with timeout"
+      cisco.ciscosmb.ciscosmb_hostname:
+        state: merged
+        config:
+          hostname: R1
+
+    - name: "Confirm the Commit"
+      cisco.ciscosmb.ciscosmb_command:
+        commands:
+          - configure confirm
+
+# Commands fired
+# - configure terminal revert timer 1 (cliconf specific)
+# - hostname R1 (from hostname resource module)
+# - configure confirm (from ciscosmb_command module)
+
+# Use commit confirm with timeout and confirm the commit via cliconf
+
+- name: Example commit confirmed
+  vars:
+    ansible_ciscosmb_commit_confirm_immediate: True
+    ansible_ciscosmb_commit_confirm_timeout: 3
+  tasks:
+    - name: "Commit confirmed with timeout"
+      cisco.ciscosmb.ciscosmb_hostname:
+        state: merged
+        config:
+          hostname: R1
+
+# Commands fired
+# - configure terminal revert timer 3 (cliconf specific)
+# - hostname R1 (from hostname resource module)
+# - configure confirm (cliconf specific)
+
+# Use commit confirm via cliconf using default timeout
+
+- name: Example commit confirmed
+  vars:
+    ansible_ciscosmb_commit_confirm_immediate: True
+  tasks:
+    - name: "Commit confirmed with timeout"
+      cisco.ciscosmb.ciscosmb_hostname:
+        state: merged
+        config:
+          hostname: R1
+
+# Commands fired
+# - configure terminal revert timer 1 (cliconf specific with default timeout)
+# - hostname R1 (from hostname resource module)
+# - configure confirm (cliconf specific)
+
+"""
 
 import json
 import re
@@ -55,42 +161,27 @@ class Cliconf(CliconfBase):
         self._device_info = {}
         super(Cliconf, self).__init__(*args, **kwargs)
 
+
     @enable_mode
-    def get_config(self, source='running', flags=None, format=None):
+    def get_config(self, source="running", flags=None, format=None):
         if source not in ("running", "startup"):
-            raise ValueError(
-                "fetching configuration from %s is not supported" % source
-            )
+            raise ValueError("fetching configuration from %s is not supported" % source)
 
         if format:
-            raise ValueError(
-                "'format' value %s is not supported for get_config" % format
-            )
+            raise ValueError("'format' value %s is not supported for get_config" % format)
 
-        if flags:
-            raise ValueError(
-                "'flags' value %s is not supported for get_config" % flags
-            )
-
+        if not flags:
+            flags = []
         if source == "running":
             cmd = "show running-config "
         else:
             cmd = "show startup-config "
 
+        cmd += " ".join(to_list(flags))
+        cmd = cmd.strip()
+
         return self.send_command(cmd)
 
-    def get(self, command, prompt=None, answer=None, sendonly=False, newline=True, output=None, check_all=False):
-        if not command:
-            raise ValueError("must provide value of command to execute")
-        if output:
-            raise ValueError("'output' value %s is not supported for get" % output)
-        return self.send_command(command=command, prompt=prompt, answer=answer, sendonly=sendonly, newline=newline, check_all=check_all)
-
-    def get_capabilities(self):
-        result = super().get_capabilities()
-        return json.dumps(result)
-
-    # copy from https://github.com/ansible-collections/cisco.ios/blob/main/plugins/cliconf/ios.py
     def get_diff(
         self,
         candidate=None,
@@ -252,6 +343,73 @@ class Cliconf(CliconfBase):
         resp["response"] = results
         return resp
 
+    def edit_macro(self, candidate=None, commit=True, replace=None, comment=None):
+        """
+        ios_config:
+          lines: "{{ macro_lines }}"
+          parents: "macro name {{ macro_name }}"
+          after: '@'
+          match: line
+          replace: block
+        """
+        resp = {}
+        operations = self.get_device_operations()
+        self.check_edit_config_capability(operations, candidate, commit, replace, comment)
+
+        results = []
+        requests = []
+        if commit:
+            commands = ""
+            self.send_command("config terminal")
+            time.sleep(0.1)
+            # first item: macro command
+            commands += candidate.pop(0) + "\n"
+            multiline_delimiter = candidate.pop(-1)
+            for line in candidate:
+                commands += " " + line + "\n"
+            commands += multiline_delimiter + "\n"
+            obj = {"command": commands, "sendonly": True}
+            results.append(self.send_command(**obj))
+            requests.append(commands)
+
+            time.sleep(0.1)
+            self.send_command("end", sendonly=True)
+            time.sleep(0.1)
+            results.append(self.send_command("\n"))
+            requests.append("\n")
+
+        resp["request"] = requests
+        resp["response"] = results
+        return resp
+
+    def get(
+        self,
+        command=None,
+        prompt=None,
+        answer=None,
+        sendonly=False,
+        newline=True,
+        output=None,
+        check_all=False,
+    ):
+        if not command:
+            raise ValueError("must provide value of command to execute")
+        if output:
+            raise ValueError("'output' value %s is not supported for get" % output)
+
+        return self.send_command(
+            command=command,
+            prompt=prompt,
+            answer=answer,
+            sendonly=sendonly,
+            newline=newline,
+            check_all=check_all,
+        )
+
+#    def get_capabilities(self):
+#        result = super().get_capabilities()
+#        return json.dumps(result)
+
     def check_device_type(self):
         device_type = "L2"
         try:
@@ -267,15 +425,16 @@ class Cliconf(CliconfBase):
             device_info['network_os'] = 'ciscosmb'
             # Ensure we are not in config mode
             self._update_cli_prompt_context(config_context=")#", exit_command="end")
-
-            resource = self.get('show verison')
-            data = to_text(resource, errors='surrogate_or_strict').strip()
-            match = re.search(r'SW version  +(\S+) \(.*$', data)
+            reply = self.get(command="show version")
+            data = to_text(reply, errors="surrogate_or_strict").strip()
+            match = re.search(r"Version (\S+)", data)
             if match:
-                device_info['network_os_version'] = match.group(1)
+                device_info["network_os_version"] = match.group(1).strip(",")
 
             model = self.get('show inventory')
             data = to_text(model, errors='surrogate_or_strict').strip()
+            # TODO: wrong model
+            # TODO: it sets net_iostype ...
             match = re.search(r'PID: (.+)$', data, re.M)
             if match:
                 device_info['network_os_model'] = match.group(1)
@@ -288,10 +447,9 @@ class Cliconf(CliconfBase):
 
             device_info["network_os_image"] = "TODO: not implemented yet"
             device_info["network_os_type"] = self.check_device_type()
-
             self._device_info = device_info
 
-        return device_info
+        return self._device_info
 
     def get_device_operations(self):
         return {
