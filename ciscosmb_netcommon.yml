@@ -20,49 +20,45 @@
       ansible.netcommon.network_resource:
       register: res_resources
 
-#    - name: get CiscoSMB NC facts
-#      community.ciscosmb.ciscosmb_facts:
-#      register: res_facts
-#      when: ansible_network_os == 'community.ciscosmb.ciscosmb'
-#    
-#    - name: get CiscoIOS NC facts
-#      cisco.ios.ios_facts:
-#      register: res_facts
-#      when: ansible_network_os == 'cisco.ios.ios'
+#    - name: get hostname by resource module
+#      ansible.netcommon.network_resource:
+#        name: hostname
+#        state: gathered
+#      register: res_hostname
 
-    - name: get CiscoSMB NC hostname
-      community.ciscosmb.ciscosmb_hostname:
-        state: gathered
-      register: res_hostname
-      when: ansible_network_os == 'community.ciscosmb.ciscosmb'
+#    - name: Hostname
+#      ansible.builtin.debug:
+#        verbosity: 1
+#        var: res_hostname
+
+    - name: Host resources
+      ansible.builtin.debug:
+        verbosity: 1
+        var: res_resources
     
-    - name: get CiscoIOS NC hostname
-      cisco.ios.ios_hostname:
-        state: gathered
-      register: res_hostname
-      when: ansible_network_os == 'cisco.ios.ios'
+#    - name: Host NC facts
+#      ansible.builtin.debug:
+#        verbosity: 1
+#        var: res_facts
 
-    - name: show results
-      ansible.builtin.debug:
-        verbosity: 1
-        msg:
-          - "NC resources: {{ res_resources | default('')}}"
-          - "NC facts:     {{ res_facts | default('')}}"
-          - "NC hostname:  {{ res_hostname | default('')}}"
+#    - name: Selected ansible_facts
+#      ansible.builtin.debug:
+#        verbosity: 0
+#        msg:
+#          - "NC hostname:     {{ res_hostname | default('')}}"
+#          - "Hostname:        {{ ansible_facts['net_hostname'] | default('') }}"
+#          - "Model:           {{ ansible_facts['net_model'] | default('') }}"
+#          - "Network OS:      {{ ansible_network_os | default('') }}"
+#          - "Network OS (NC): {{ ansible_facts['net_system'] | default('') }}"
+#          - "System:          {{ ansible_facts['system'] | default('') }}"
+#          - "Machine:         {{ ansible_facts['architecture'] | default('') }}"
+#          - "SN:              {{ ansible_facts['net_serialnum'] | default('') }}"
+#          - "SN prod:         {{ ansible_facts['ansible_product_nam'] | default('') }}"
+#          - "SW version:      {{ ansible_facts['net_version'] | default('') }}"
+#          - "HW version:      {{ ansible_facts['net_hw_version'] | default('') }}"
+#          - "config:          {{ ansible_facts['net_config'] | default('') }}"
 
-    - name: Selected ansible_facts
+    - name: Host facts 
       ansible.builtin.debug:
-        verbosity: 1
-        msg:
-          - "Hostname:        {{ ansible_facts['net_hostname'] | default('') }}"
-          - "Model:           {{ ansible_facts['net_model'] | default('') }}"
-          - "Network OS:      {{ ansible_network_os | default('') }}"
-          - "Network OS (NC): {{ ansible_facts['net_system'] | default('') }}"
-          - "System:          {{ ansible_facts['system'] | default('') }}"
-          - "Machine:         {{ ansible_facts['architecture'] | default('') }}"
-          - "SN:              {{ ansible_facts['net_serialnum'] | default('') }}"
-          - "SN prod:         {{ ansible_facts['ansible_product_nam'] | default('') }}"
-          - "SW version:      {{ ansible_facts['net_version'] | default('') }}"
-          - "HW version:      {{ ansible_facts['net_hw_version'] | default('') }}"
-          - "config:          {{ ansible_facts['net_config'] | default('') }}"
-          
+        verbosity: 2
+        var: ansible_facts          
