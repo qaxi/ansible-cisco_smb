@@ -160,6 +160,8 @@ class Cliconf(CliconfBase):
     def __init__(self, *args, **kwargs):
         self._device_info = {}
         super(Cliconf, self).__init__(*args, **kwargs)
+        # necesary for get "gather_facts: true" work
+        ansible.constants.CONNECTION_FACTS_MODULES['community.ciscosmb.ciscosmb'] = 'community.ciscosmb.ciscosmb_facts'
 
 
     @enable_mode
