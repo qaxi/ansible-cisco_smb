@@ -16,26 +16,40 @@
 
     ###
     # Collect data
-    - name: get list of resource modules for given network_os
+    - name: get list of resource modules
       ansible.netcommon.network_resource:
       register: res_resources
 
-#    - name: get hostname by resource module
-#      ansible.netcommon.network_resource:
-#        name: hostname
-#        state: gathered
-#      register: res_hostname
+    #- name: get hostname by resource module
+    #  ansible.netcommon.network_resource:
+    #    name: hostname
+    #    state: gathered
+    #  register: res_hostname
 
-#    - name: Hostname
-#      ansible.builtin.debug:
-#        verbosity: 1
-#        var: res_hostname
+    - name: get hostname
+      community.ciscosmb.ciscosmb_hostname:
+        state: gathered
+      register: ciscosmb_hostname
+      when: ansible_network_os == 'community.ciscosmb.ciscosmb'
 
-    - name: Host resources
-      ansible.builtin.debug:
-        verbosity: 1
-        var: res_resources
-    
+    - name: get facts
+      community.ciscosmb.ciscosmb_facts:
+        gather_subset: min
+      register: ciscosmb_facts
+      when: ansible_network_os == 'community.ciscosmb.ciscosmb'
+
+    - name: get IOS hostname
+      cisco.ios.ios_hostname:
+        state: gathered
+      register: ios_hostname
+      when: ansible_network_os == 'cisco.ios.ios'
+
+    - name: get IOS facts
+      cisco.ios.ios_facts:
+        gather_subset: min
+      register: ios_facts
+      when: ansible_network_os == 'cisco.ios.ios'
+
 #    - name: Host NC facts
 #      ansible.builtin.debug:
 #        verbosity: 1
@@ -60,5 +74,5 @@
 
     - name: Host facts 
       ansible.builtin.debug:
-        verbosity: 2
+        verbosity: 6
         var: ansible_facts          
