@@ -577,6 +577,12 @@ class Cliconf(CliconfBase):
         with defaults.
         :return: valid default filter
         """
+        # ToDo: 
+        # FW v. 1.x
+        # show running-config ?")
+        # answer is 
+        # - brief
+        # - detailed
         out = self.get("show running-config ?")
         out = to_text(out, errors="surrogate_then_replace")
 
