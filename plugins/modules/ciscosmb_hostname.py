@@ -10,11 +10,12 @@ The module file for ciscosmb_hostname
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 # TODO make it ciscosmb documentation
 DOCUMENTATION = """
-module: ios_hostname
+module: ciscosmb_hostname
 short_description: Resource module to configure hostname.
 description:
   - This module provides declarative management of hostname on Cisco IOS devices.
@@ -300,6 +301,7 @@ parsed:
 """
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.community.ciscosmb.plugins.module_utils.network.ciscosmb.argspec.hostname.hostname import (
     HostnameArgs,
 )

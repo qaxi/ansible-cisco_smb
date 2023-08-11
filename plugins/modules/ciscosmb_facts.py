@@ -134,6 +134,62 @@ ansible_net_image:
   description: The image file the device is running
   returned: always
   type: str
+ansible_net_stacked_models:
+  description: The model names of each device in the stack
+  returned: when multiple devices are configured in a stack
+  type: list
+ansible_net_stacked_serialnums:
+  description: The serial numbers of each device in the stack
+  returned: when multiple devices are configured in a stack
+  type: list
+
+# hardware
+ansible_net_filesystems:
+  description: All file system names available on the device
+  returned: when hardware is configured
+  type: list
+ansible_net_filesystems_info:
+  description: A hash of all file systems containing info about each file system (e.g. free and total space)
+  returned: when hardware is configured
+  type: dict
+ansible_net_memfree_mb:
+  description: The available free memory on the remote device in Mb
+  returned: when hardware is configured
+  type: int
+ansible_net_memtotal_mb:
+  description: The total memory on the remote device in Mb
+  returned: when hardware is configured
+  type: int
+ansible_net_cpu_utilization:
+  description: The current CPU utilization of the device
+  returned: when hardware is configured
+  type: dict
+
+# config
+ansible_net_config:
+  description: The current active config from the device
+  returned: when config is configured
+  type: str
+
+# interfaces
+ansible_net_all_ipv4_addresses:
+  description: All IPv4 addresses configured on the device
+  returned: when interfaces is configured
+  type: list
+ansible_net_all_ipv6_addresses:
+  description: All IPv6 addresses configured on the device
+  returned: when interfaces is configured
+  type: list
+ansible_net_interfaces:
+  description: A hash of all interfaces running on the system
+  returned: when interfaces is configured
+  type: dict
+ansible_net_neighbors:
+  description:
+    - The list of CDP and LLDP neighbors from the remote device. If both,
+      CDP and LLDP neighbor data is present on one port, CDP is preferred.
+  returned: when interfaces is configured
+  type: dict
 """
 from ansible.module_utils.basic import AnsibleModule
 
@@ -159,6 +215,7 @@ def main():
     ansible_facts = {}
     if module.params.get("available_network_resources"):
         ansible_facts["available_network_resources"] = sorted(FACT_RESOURCE_SUBSETS.keys())
+    #raise Exception("modules/ciscosmb_facts.py main()", module._name, argument_spec)
     result = Facts(module).get_facts()
     additional_facts, additional_warnings = result
     ansible_facts.update(additional_facts)
@@ -166,5 +223,5 @@ def main():
     module.exit_json(ansible_facts=ansible_facts, warnings=warnings)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

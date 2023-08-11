@@ -160,11 +160,11 @@ from ansible import constants as C
 
 class Cliconf(CliconfBase):
     def __init__(self, *args, **kwargs):
-        self._device_info = {}
-        super(Cliconf, self).__init__(*args, **kwargs)
         # necesary for get "gather_facts: true" work
         C.CONNECTION_FACTS_MODULES['community.ciscosmb.ciscosmb'] = 'community.ciscosmb.ciscosmb_facts'
-
+	
+        self._device_info = {}
+        super(Cliconf, self).__init__(*args, **kwargs)
 
     @enable_mode
     def get_config(self, source="running", flags=None, format=None):
@@ -427,30 +427,56 @@ class Cliconf(CliconfBase):
             device_info = {}
 
             device_info['network_os'] = 'ciscosmb'
-            
             # Ensure we are not in config mode
             self._update_cli_prompt_context(config_context=")#", exit_command="end")
-            reply = self.get(command="show version")
-            data = to_text(reply, errors="surrogate_or_strict").strip()
-            match = re.search(r"Version (\S+)", data)
+            version = self.get(command="show version")
+            version_data = to_text(version, errors="surrogate_or_strict").strip()
+            match = re.search(r"SW version *(\S+) ", version_data)
             if match:
                 device_info["network_os_version"] = match.group(1).strip(",")
 
-            model = self.get('show inventory')
-            data = to_text(model, errors='surrogate_or_strict').strip()
-            # TODO: wrong model
+            inventory = self.get('show inventory')
+            inventory_data = to_text(inventory, errors='surrogate_or_strict').strip()
             # TODO: it sets net_iostype ...
-            match = re.search(r'PID: (.+)$', data, re.M)
+            match = re.search(r'PID: (\S+) *VID: (\S+) *SN: (\S+)', inventory_data, re.M)
             if match:
                 device_info['network_os_model'] = match.group(1)
-
-            identity = self.get('show system')
-            data = to_text(identity, errors='surrogate_or_strict').strip()
-            match = re.search(r'System Name: +(\S+)', data, re.M)
+                device_info['network_hw_version'] = match.group(2)
+                device_info['network_os_serialnum'] = match.group(3)
+            
+#            model_search_strs = [
+#                r"^[Cc]isco (.+) \(revision",
+#                r"^[Cc]isco (\S+).+bytes of .*memory",
+#            ]
+#            for item in model_search_strs:
+#                match = re.search(item, data, re.M)
+#                if match:
+#                    version = match.group(1).split(" ")
+#                    device_info["network_os_model"] = version[0]
+#                    break
+            system = self.get('show system')
+            system_data = to_text(inventory, errors='surrogate_or_strict').strip()
+            # TODO: it sets net_iostype ...
+            match = re.search(r"^System Name: *(\S+) *", system_data, re.M)
             if match:
-                device_info['network_os_hostname'] = match.group(1)
+                device_info["network_os_hostname"] = match.group(1)
 
-            device_info["network_os_image"] = "TODO: not implemented yet"
+            device_info["network_os_image"] = "#TODO: not implemented"
+
+#            model = self.get('show inventory')
+#            data = to_text(model, errors='surrogate_or_strict').strip()
+#            # TODO: wrong model
+#            # TODO: it sets net_iostype ...
+#            match = re.search(r'PID: (.+)$', data, re.M)
+#            if match:
+#                device_info['network_os_model'] = match.group(1)
+#
+#            identity = self.get('show system')
+#            data = to_text(identity, errors='surrogate_or_strict').strip()
+#            match = re.search(r'System Name: +(\S+)', data, re.M)
+#            if match:
+#                device_info['network_os_hostname'] = match.group(1)
+#
             device_info["network_os_type"] = self.check_device_type()
             self._device_info = device_info
 

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Red Hat
+# Copyright 2022 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 
 __metaclass__ = type
 
@@ -14,30 +15,28 @@ for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
 
-from copy import deepcopy
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
 
-from ansible.module_utils.six import iteritems
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
+from ansible_collections.community.ciscosmb.plugins.module_utils.network.ciscosmb.argspec.hostname.hostname import (
+    HostnameArgs,
 )
 from ansible_collections.community.ciscosmb.plugins.module_utils.network.ciscosmb.rm_templates.hostname import (
     HostnameTemplate,
 )
-from ansible_collections.community.ciscosmb.plugins.module_utils.network.ciscosmb.argspec.hostname.hostname import (
-    HostnameArgs,
-)
 
 
 class HostnameFacts(object):
-    """ The ciscosmb hostname facts class
-    """
+    """ The ciscosmb hostname facts class"""
 
-    def __init__(self, module, subspec='config', options='options'):
+    def __init__(self, module, subspec="config", options="options"):
         self._module = module
         self.argument_spec = HostnameArgs.argument_spec
 
+    def get_hostname_data(self, connection):
+        return connection.get("show system")
+
     def populate_facts(self, connection, ansible_facts, data=None):
-        """ Populate the facts for Hostname network resource
+        """Populate the facts for Hostname network resource
 
         :param connection: the device connection
         :param ansible_facts: Facts dictionary
@@ -49,23 +48,20 @@ class HostnameFacts(object):
         facts = {}
         objs = []
 
-        # TODO: optimalization - get the config only once ...
-        # FW ver. 1.x does not have | filter
-        command = "show running-config"
         if not data:
-            data = connection.get(command=command)
+            data = self.get_hostname_data(connection)
 
         # parse native config using the Hostname template
         hostname_parser = HostnameTemplate(lines=data.splitlines(), module=self._module)
         objs = hostname_parser.parse()
 
-        ansible_facts['ansible_network_resources'].pop('hostname', None)
+        ansible_facts["ansible_network_resources"].pop("hostname", None)
 
         params = utils.remove_empties(
-            hostname_parser.validate_config(self.argument_spec, {"config": objs}, redact=True)
+            hostname_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
         )
 
-        facts['hostname'] = params['config']
-        ansible_facts['ansible_network_resources'].update(facts)
+        facts["hostname"] = params.get("config", {})
+        ansible_facts["ansible_network_resources"].update(facts)
 
         return ansible_facts

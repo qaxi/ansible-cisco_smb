@@ -1,0 +1,19 @@
+- name: Gather Facts
+  gather_facts: true
+  hosts: all
+
+  tasks:
+#    - name: get hostname by resource module
+#      ansible.netcommon.network_resource:
+#        name: hostname
+#        state: gathered
+#      register: res_hostname
+
+    - name: facts
+      ansible.builtin.debug:
+        var: ansible_facts
+
+    - name: Host vars
+      ansible.builtin.debug:
+        verbosity: 4
+        var: hostvars[inventory_hostname]

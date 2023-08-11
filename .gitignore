@@ -17,6 +17,16 @@ changelogs/.plugin-cache.yaml
 # resource module builder
 resource_module_builder
 
+# "influential" directory ...
+ios
+
+# local notes
+TODO.txt
+
+# debug logs
+log*
+*.log
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

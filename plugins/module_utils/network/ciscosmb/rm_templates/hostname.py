@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Red Hat
+# Copyright 2022 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 
 __metaclass__ = type
 
@@ -15,6 +16,7 @@ the given network resource.
 """
 
 import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -30,13 +32,13 @@ class HostnameTemplate(NetworkTemplate):
             "name": "hostname",
             "getval": re.compile(
                 r"""
-                ^hostname\s(?P<hostname>\S+)
-                $""", re.VERBOSE),
+                ^System Name: *(?P<hostname>\S+) *
+                $""", re.VERBOSE,
+            ),
             "setval": "hostname {{ hostname }}",
             "result": {
-                "hostname": "{{ hostname }}"
+                "hostname": "{{ hostname }}",
             },
-            "shared": True
         },
     ]
     # fmt: on
