@@ -93,6 +93,15 @@ cd ansible_collections/community/ciscosmb
 #export ANSIBLE_DEBUG=True
 #export ANSIBLE_PERSISTENT_LOG_MESSAGES=True
 #ansible-playbook -vvvv ...
+# or
+# add folowing to '/usr/local/bin/ansible-playbook'
+## TODO: remove debuginG
+#import debugpy
+#debugpy.listen(("0.0.0.0", 5678))
+#debugpy.wait_for_client()
+#debugpy.breakpoint()
+## and user debugpy debugger (in Vim, VSCode ...)
+
 
 # PY="--python 3.8" # set your version or unset
 METHOD="--docker" # or --local if you have no Docker installed

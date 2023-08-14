@@ -47,7 +47,6 @@ class ActionModule(ActionNetworkModule):
                 % self._play_context.connection,
             }
 
-        raise Exception("function ActionModule().run()", module_name, task_wars)
         result = super(ActionModule, self).run(task_vars=task_vars)
         if warnings:
             if "warnings" in result:

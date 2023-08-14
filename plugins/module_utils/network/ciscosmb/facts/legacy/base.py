@@ -157,7 +157,6 @@ class FactsBase(object):
         self.facts = dict()
         self.responses = None
         self.warnings = list()
-        #raise Exception("p/mu/n/ciscosmb/facts/legacy/base FactsBase.__init__()", module)
 
     def populate(self):
         self.responses = run_commands(
