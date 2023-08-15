@@ -3,14 +3,19 @@
   hosts: all
 
   tasks:
-#    - name: get hostname by resource module
+#    - name: get list of resource modules
 #      ansible.netcommon.network_resource:
-#        name: hostname
-#        state: gathered
-#      register: res_hostname
+#      register: res_resources
+
+    - name: get hostname by resource module
+      ansible.netcommon.network_resource:
+        name: hostname
+        state: gathered
+      register: res_hostname
 
     - name: facts
       ansible.builtin.debug:
+        verbosity: 3
         var: ansible_facts
 
     - name: Host vars

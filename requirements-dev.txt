@@ -1,3 +1,5 @@
+# ansible
+ansible==7.5
 # connection libraries
 paramiko
 ansible-pylibssh
@@ -23,3 +25,5 @@ antsibull-changelog
 # network resource builder
 jsonref
 
+# debugging
+debugpy

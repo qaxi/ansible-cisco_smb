@@ -215,7 +215,6 @@ def main():
     ansible_facts = {}
     if module.params.get("available_network_resources"):
         ansible_facts["available_network_resources"] = sorted(FACT_RESOURCE_SUBSETS.keys())
-    #raise Exception("modules/ciscosmb_facts.py main()", module._name, argument_spec)
     result = Facts(module).get_facts()
     additional_facts, additional_warnings = result
     ansible_facts.update(additional_facts)

@@ -20,11 +20,11 @@
       ansible.netcommon.network_resource:
       register: res_resources
 
-    #- name: get hostname by resource module
-    #  ansible.netcommon.network_resource:
-    #    name: hostname
-    #    state: gathered
-    #  register: res_hostname
+    - name: get hostname by resource module
+      ansible.netcommon.network_resource:
+        name: hostname
+        state: gathered
+      register: res_hostname
 
     - name: get hostname
       community.ciscosmb.ciscosmb_hostname:
